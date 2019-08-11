@@ -36,4 +36,28 @@ db.collection('taskmanager').find({status : true}).count((error,user)=>{
     console.log(user);
 })
 
+//Updating the Docuemnt
+// db.collection('taskmanager')
+// .updateMany({status : true},{
+//     $set : {
+//         status : false
+//     }
+// })
+// .then((result)=>{
+//  console.log(result)
+// })
+// .catch(()=>{
+// console.log(error)
+// })
+
+//Deleting the document
+db.collection('taskmanager').deleteMany({status: false})
+.then((result)=>{
+console.log(result);
+})
+.catch((error)=>{
+console.log(error)
+})
+
+
 })
