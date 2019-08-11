@@ -6,7 +6,7 @@ const databaseName ='task-manager';
 
 MongoClient.connect(connectionURL,{useNewUrlParser :  true},(error,client)=>{
     if(error) {
-        console.log('Unable to connect');
+        console.log('Unable to connect db fpr');
     }
     const db = client.db(databaseName);
 
