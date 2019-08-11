@@ -1,0 +1,14 @@
+{
+  "name": "task-manager",
+  "version": "1.0.0",
+  "description": "MongoDB TODO App",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Namrata Singh",
+  "license": "ISC",
+  "dependencies": {
+    "mongodb": "^3.3.0-beta2"
+  }
+}
