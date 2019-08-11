@@ -9,6 +9,6 @@
   "author": "Namrata Singh",
   "license": "ISC",
   "dependencies": {
-    "mongodb": "^3.3.0-beta2"
+   "mongoose": "^5.3.16"
   }
 }
