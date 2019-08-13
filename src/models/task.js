@@ -1,15 +1,20 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
 
-const Tasks = mongoose.model('taskmanager',{
-    description : {
-       type : String,
-       trim : true,
-       required : true
+const Task = mongoose.model('Task', {
+    description: {
+        type: String,
+        required: true,
+        trim: true
     },
-    status : {
-       type : Boolean,
-       default : false
+    completed: {
+        type: Boolean,
+        default: false
+    },
+    owner: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'User'
     }
 })
 
-module.exports = Tasks;
+module.exports = Task

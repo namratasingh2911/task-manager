@@ -4,13 +4,15 @@
   "description": "MongoDB TODO App",
   "main": "app.js",
   "scripts": {
-    "start" : "node src/index",
-    "dev" : "nodemon src/index.js"
+    "start": "node src/index",
+    "dev": "nodemon src/index.js"
   },
   "author": "Namrata Singh",
   "license": "ISC",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "express": "^4.16.4",
+    "jsonwebtoken": "^8.4.0",
     "mongoose": "^5.3.16",
     "validator": "^10.9.0"
   },

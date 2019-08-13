@@ -1,92 +1,82 @@
-require('../db/mongoose');
+const express = require('express')
+const User = require('../models/user')
+const auth = require('../middleware/auth')
+const router = new express.Router()
 
-const express = require('express');
-const router = new express.Router();
-const Task = require('../models/task');
+router.post('/users', async (req, res) => {
+    const user = new User(req.body)
 
-//get reuest
-router.get('/tasks', async (req, res) => {
     try {
-        const tasks = await Task.find({})
-        res.send(tasks);
-    }
-    catch (e) {
-        res.status(404).send(e);
-    }
-
-
-})
-
-//get request by Id
-
-router.get('/tasks/:id', async (req, res) => {
-    const _id = req.params.id;
-    try {
-        const task = await Task.findById(_id)
-        if (!task) {
-            return res.status(404).send();
-        }
-        res.status(200).send(task);
-    }
-    catch (e) {
-        res.status(500).send();
-    }
-
-})
-
-//post request
-router.post('/tasks', async (req, res) => {
-    const task = new Task(req.body);
-    try {
-        await task.save();
-        res.status(201).send(task);
+        await user.save()
+        const token = await user.generateAuthToken()
+        res.status(201).send({ user, token })
     } catch (e) {
-        res.status(401).send(e);
+        res.status(400).send(e)
     }
+})
 
+router.post('/users/login', async (req, res) => {
+    try {
+        const user = await User.findByCredentials(req.body.email, req.body.password)
+        const token = await user.generateAuthToken()
+        res.send({ user, token })
+    } catch (e) {
+        res.status(400).send()
+    }
+})
 
-});
+router.post('/users/logout', auth, async (req, res) => {
+    try {
+        req.user.tokens = req.user.tokens.filter((token) => {
+            return token.token !== req.token
+        })
+        await req.user.save()
 
-//pacth request 
-router.patch('/tasks/:id', async (req, res) => {
-    const updates = Object.keys(req.body);
-    const allowedUpdates = ['description', 'status'];
+        res.send()
+    } catch (e) {
+        res.status(500).send()
+    }
+})
 
-    const isValidOperation = updates.every((update) =>
-        allowedUpdates.includes(update)
-    )
-    console.log(updates, allowedUpdates);
-    console.log(isValidOperation);
+router.post('/users/logoutAll', auth, async (req, res) => {
+    try {
+        req.user.tokens = []
+        await req.user.save()
+        res.send()
+    } catch (e) {
+        res.status(500).send()
+    }
+})
+
+router.get('/users/me', auth, async (req, res) => {
+    res.send(req.user)
+})
+
+router.patch('/users/me', auth, async (req, res) => {
+    const updates = Object.keys(req.body)
+    const allowedUpdates = ['name', 'email', 'password', 'age']
+    const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
 
     if (!isValidOperation) {
-        res.status(404).send('error: Invalid Update');
+        return res.status(400).send({ error: 'Invalid updates!' })
     }
+
     try {
-        const task = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
-        if (!task) {
-            res.status(404).send();
-        }
-        res.status(200).send(task);
-    }
-    catch (e) {
-        res.status(404).send();
+        updates.forEach((update) => req.user[update] = req.body[update])
+        await req.user.save()
+        res.send(req.user)
+    } catch (e) {
+        res.status(400).send(e)
     }
 })
 
-//Deleting the record
-router.delete('/tasks                                                    /:id',async(req,res)=>{
-    try{
-        const task = await Task.findByIdAndDelete(req.params.id);
-        if(!task){
-            res.status(404).send()
-        }
-        res.send(task);
+router.delete('/users/me', auth, async (req, res) => {
+    try {
+        await req.user.remove()
+        res.send(req.user)
+    } catch (e) {
+        res.status(500).send()
     }
-    catch(e){
-        res.status(500).send();
+})
 
-    }
-   
-});
-
-module.exports= router;
+module.exports = router
