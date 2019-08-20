@@ -1,9 +1,14 @@
 const express = require('express')
 const User = require('../models/user')
+const path = require('path')
 const auth = require('../middleware/auth')
 const router = new express.Router()
 const multer = require('multer')
 const sharp = require('sharp')
+
+router.get('/', function(req, res, next){
+    res.render(path.join(__dirname, '../http-node/dist/http-node/')+'/index.html');
+});
 
 router.post('/users', async (req, res) => {
     const user = new User(req.body)
